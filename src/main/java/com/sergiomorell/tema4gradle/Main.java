@@ -1,17 +1,40 @@
 package com.sergiomorell.tema4gradle;
 
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
-public class Main {
-    static void main() {
-        //TIP Press <shortcut actionId="ShowIntentionActions"/> with your caret at the highlighted text
-        // to see how IntelliJ IDEA suggests fixing it.
-        IO.println(String.format("Hello and welcome!"));
+import dev.langchain4j.data.message.AiMessage;
+import dev.langchain4j.data.message.ChatMessage;
+import dev.langchain4j.data.message.SystemMessage;
+import dev.langchain4j.data.message.UserMessage;
+import dev.langchain4j.model.openai.OpenAiChatModel;
 
-        for (int i = 1; i <= 5; i++) {
-            //TIP Press <shortcut actionId="Debug"/> to start debugging your code. We have set one <icon src="AllIcons.Debugger.Db_set_breakpoint"/> breakpoint
-            // for you, but you can always add more by pressing <shortcut actionId="ToggleLineBreakpoint"/>.
-            IO.println("i = " + i);
-        }
+import java.util.ArrayList;
+import java.util.List;
+
+public class Main {
+    public static void main(String[] args) {
+        // El TOKEN no es necesario para interactuar con modelos locales
+        final String TOKEN = "ollama";
+
+        var model1 = OpenAiChatModel.builder()
+                .baseUrl("http://localhost:11434/v1")
+                .apiKey(TOKEN)
+                .modelName("gemma:2b")
+                .build();
+
+        var model2 = OpenAiChatModel.builder()
+                .baseUrl("http://localhost:11434/v1")
+                .apiKey(TOKEN)
+                .modelName("llama3.1:8b")
+                .build();
+
+        List<ChatMessage> history = new ArrayList<>();
+        // PREGUNTA
+        history.add(new SystemMessage("Eres novato en física cuántica."));
+        String pregunta = model1.chat("Haz una pregunta básica sobre física cuántica.");
+        System.out.println("Gemma: " + pregunta);
+
+        // RESPUESTA
+        history.add(new SystemMessage("Eres un experto en física cuántica."));
+        String respuesta = model2.chat(pregunta);
+        System.out.println("Llama: " + respuesta);
     }
 }
